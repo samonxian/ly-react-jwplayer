@@ -1,0 +1,62 @@
+{
+  "name": "hcm-test",
+  "version": "0.0.1",
+  "dependencies": {
+    "antd": "^2.9.3",
+    "classnames": "^2.2.5",
+    "js-cookie": "^2.1.4",
+    "react-mobx-boilerplate-js": "^0.0.8",
+    "styled-components": "^2.1.0"
+  },
+  "devDependencies": {
+    "react-boilerplate-app-scripts": "^0.0.26"
+  },
+  "scripts": {
+    "start": "react-boilerplate-app-scripts start",
+    "build": "react-boilerplate-app-scripts build",
+    "view-locale-to-excel": "react-boilerplate-app-scripts view-locale-to-excel",
+    "vlte": "react-boilerplate-app-scripts view-locale-to-excel",
+    "excel-to-locale-config": "react-boilerplate-app-scripts excel-to-locale-config",
+    "etlc": "react-boilerplate-app-scripts excel-to-locale-config",
+    "create-view": "react-boilerplate-app-scripts create-view",
+    "cv": "react-boilerplate-app-scripts create-view",
+    "route": "react-boilerplate-app-scripts route",
+    "reducer": "react-boilerplate-app-scripts reducer",
+    "cover": "react-boilerplate-app-scripts cover",
+    "use": "react-boilerplate-app-scripts use"
+  },
+  "babel": {
+    "presets": [
+      "react",
+      [
+        "es2015",
+        {
+          "modules": false
+        }
+      ],
+      "stage-0"
+    ],
+    "plugins": [
+      "transform-decorators-legacy"
+    ],
+    "env": {
+      "development": {
+        "plugins": [
+          "react-hot-loader/babel"
+        ]
+      }
+    }
+  },
+  "react-boilerplate-app-scripts": {
+    "proxy": {
+      "/v2/record": "http://api.topvdn.com"
+    },
+    "language": "zh_CN",
+    "feature": {
+      "dataFlow": "mobx"
+    }
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  }
+}
