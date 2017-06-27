@@ -68,5 +68,19 @@ export default {
     } else if (document.webkitExitFullscreen) {
       document.webkitExitFullscreen();
     }
+  },
+  fullscreenEnabled:
+    document.fullscreenEnabled ||
+      document.mozFullScreenEnabled ||
+      document.webkitFullscreenEnabled ||
+      document.msFullscreenEnabled,
+  isFullscreen() {
+    return !!(
+      document.fullscreenElement ||
+      document.msFullscreenElement ||
+      document.mozFullScreenElement ||
+      document.webkitFullscreenElement ||
+      false
+    );
   }
 };

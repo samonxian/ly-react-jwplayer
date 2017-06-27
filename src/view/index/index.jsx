@@ -16,7 +16,7 @@ class IndexView extends React.Component {
   };
   componentDidMount() {
     this.fetchOne(
-      '/v2/record/1003472?client_token=1003472_0_1498532724_b10773aab9b1bf6046e97a3046c3eca0&begin=1498406400'
+      '/v2/record/1003472?client_token=1003472_3221225472_1498792166_8f58929327ed89b6cf80bfdb1d0559f2'
     ).then(data => {
       this.setState({
         data: data

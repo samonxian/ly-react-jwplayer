@@ -10,9 +10,21 @@ import util from 'src/util';
 const timeLineMarginLeft = '40';
 const timeLineMarginRight = '70';
 const PlayerContainer = styled.div`
-  height: 100%;
   width: 100%;
   position: relative;
+`;
+const Loading = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 32px;
+  margin: -25px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  animation: spin 2s linear infinite;
+  color: #fff;
 `;
 const PlayerControllerContainer = styled.div`
   display: none;
@@ -139,6 +151,17 @@ export default class JWPlayer extends React.Component {
     this.setState({
       random: Math.random()
     });
+    //处理esc按键
+    this.keyDownEvent = document.addEventListener('keyup',e=>{
+      if(e.keyCode === 27) {
+        this.setState({
+          timelinePositionX: 0
+        });
+      }
+    });
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keydown',this.keyDownEvent);
   }
   componentDidUpdate() {
     let { url } = this.props;
@@ -210,24 +233,33 @@ export default class JWPlayer extends React.Component {
         bufferlength: 0.1 // 开始播放缓存时长（秒）
       }
     });
+    playerInstance.on('buffer', e => {
+      this.setState({
+        //加载
+        buffer: 1
+      });
+    });
+    playerInstance.on('bufferFull', e => {
+      this.setState({
+        //完成
+        buffer: 2
+      });
+    });
   }
 
-  hideControllerByTime = (time = 3000)=>{
-    return setTimeout(()=>{
+  hideControllerByTime = (time = 3000) => {
+    return setTimeout(() => {
       var timelineStyle = {};
       this.setState({
         timelineStyle
       });
-    },time);
-  }
+    }, time);
+  };
 
   onPlayerMoveEvent = e => {
     clearTimeout(this.clearTimeout);
-    let {
-      timelineStyle,
-      overController
-    } = this.state;
-    if(timelineStyle && timelineStyle.display !== 'block') {
+    let { timelineStyle, overController } = this.state;
+    if (timelineStyle && timelineStyle.display !== 'block') {
       timelineStyle = {
         display: 'block'
       };
@@ -235,11 +267,11 @@ export default class JWPlayer extends React.Component {
         timelineStyle
       });
     }
-    if(!overController) {
+    if (!overController) {
       //如果不在控制栏中，执行setTimeout
       this.clearTimeout = this.hideControllerByTime();
     }
-  }
+  };
 
   onPlayerOverEvent = e => {
     var timelineStyle = {
@@ -266,13 +298,13 @@ export default class JWPlayer extends React.Component {
       overController: true,
       timelineStyle
     });
-  }
+  };
   onControllerOutEvent = e => {
     this.setState({
       //鼠标不在controller上面
       overController: false
     });
-  }
+  };
   //countTime 时间轴总时间
   onTimeLineMouseMove(beginTimeStamp, countTime) {
     return e => {
@@ -333,10 +365,9 @@ export default class JWPlayer extends React.Component {
   };
 
   toggleFullScreenEvent = e => {
-    let { fullScreen } = this.state;
+    var fullScreen = util.isFullscreen();
     this.setState({
-      timelinePositionX: 0,
-      fullScreen: !fullScreen
+      timelinePositionX: 0
     });
     if (fullScreen) {
       util.exitFullscreen();
@@ -358,7 +389,7 @@ export default class JWPlayer extends React.Component {
   };
 
   toggleMuteEvent = e => {
-    var mute  = this.playerInstance.getMute();
+    var mute = this.playerInstance.getMute();
     this.setState({
       mute: !mute
     });
@@ -377,7 +408,14 @@ export default class JWPlayer extends React.Component {
       EmptyPlayer,
       ...other
     } = this.props;
-    let { hovertime, timelinePositionX, fullScreen, play , mute } = this.state;
+    let {
+      hovertime,
+      timelinePositionX,
+      play,
+      mute,
+      buffer
+    } = this.state;
+    var fullScreen = util.isFullscreen()
     if (!EmptyPlayer) {
       EmptyPlayer = DefaultEmptyPlayer;
     }
@@ -395,6 +433,12 @@ export default class JWPlayer extends React.Component {
           onMouseMove={this.onPlayerMoveEvent}
         >
           {!!url && <div id={this.id || id}>加载播放器...</div>}
+          {
+            buffer === 1 &&
+            <Loading className="ly-icon">
+              {'\uE601'}
+            </Loading>
+          }
           {!url &&
             <EmptyPlayer className="empty-player">
               <SpanLabel>无视频源</SpanLabel>
@@ -403,8 +447,8 @@ export default class JWPlayer extends React.Component {
             <PlayerControllerContainer
               className="player-controller-container ly-skin-seven"
               style={this.state.timelineStyle}
-              onMouseOver={ this.onControllerOverEvent }
-              onMouseOut={ this.onControllerOutEvent }
+              onMouseOver={this.onControllerOverEvent}
+              onMouseOut={this.onControllerOutEvent}
             >
               <LeftControl className="ly-group ly-controlbar-left-group ly-reset">
                 <IconButton
@@ -421,13 +465,12 @@ export default class JWPlayer extends React.Component {
                   </span>}
               </LeftControl>
               <RightControl className="ly-group ly-controlbar-right-group ly-reset">
-                <IconButton className="ly-icon ly-icon-inline ly-button-color jw-player-volume"
-                  onClick={
-                    this.toggleMuteEvent
-                  }
+                <IconButton
+                  className="ly-icon ly-icon-inline ly-button-color jw-player-volume"
+                  onClick={this.toggleMuteEvent}
                 >
-                  { mute && '\uE611'}
-                  { !mute && '\uE612'}
+                  {mute && '\uE611'}
+                  {!mute && '\uE612'}
                 </IconButton>
                 <IconButton
                   className="ly-icon ly-icon-inline ly-button-color jw-full-screen"
@@ -453,11 +496,12 @@ export default class JWPlayer extends React.Component {
                         left={this.timelinePositionX}
                         height={timeLineHeight}
                       />}
-                    <Line
-                      className="player-time-line-move"
-                      left={timelinePositionX + 1}
-                      height={timeLineHeight}
-                    />
+                    {false &&
+                      <Line
+                        className="player-time-line-move"
+                        left={timelinePositionX + 1}
+                        height={timeLineHeight}
+                      />}
                     <ToolTip left={timelinePositionX - 66}>
                       {hovertime}
                     </ToolTip>
