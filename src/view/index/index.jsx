@@ -57,7 +57,7 @@ class IndexView extends React.Component {
             <JWMutiplePlayerWithController
               title="test"
               titles={
-                ['1','2']
+                [<span>1</span>,<span>2</span>]
               }
               timeline={true}
               urls={[data.videos,data.videos]}

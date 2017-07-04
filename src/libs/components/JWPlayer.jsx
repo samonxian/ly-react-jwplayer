@@ -205,7 +205,6 @@ export default class JWPlayer extends React.Component {
       autostart = true,
       controls = false,
       timeline,
-      title,
       stretching,
       rtmp,
       hls,
@@ -243,8 +242,6 @@ export default class JWPlayer extends React.Component {
       image: image,
       width: '100%', // 播放器宽度
       height: '100%', // 播放器高度
-      title: title || '',
-      displaytitle: true,
       autostart: autostart, // 自动开始播放
       aspectratio: aspectratio || '16:9',
       controls: controls,

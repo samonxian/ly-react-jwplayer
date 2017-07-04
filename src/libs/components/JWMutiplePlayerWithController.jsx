@@ -5,7 +5,7 @@ import JWMutiplePlayer from './JWMutiplePlayer';
 //import classnames from 'classnames';
 
 /**
- * JWMutiplePlayer
+ * JWMutiplePlayerWithController
  *@prop {array} urls 播放器url列表，决定展示多少个播放器
  * [
  *   'http://xxxx',
@@ -23,7 +23,8 @@ import JWMutiplePlayer from './JWMutiplePlayer';
  * @prop {number} gap 分屏间隔
  * @prop {number} playerHeight 播放器高度
  * @prop {number} splitScreenCount 分屏数，默认为4
- * @prop {string} title 播放器上边标题
+ * @prop {string || React Element} title 播放器上边标题
+ * @prop {array} titles 播放器上边标题,跟urls索引一致，优先这个props
  * @prop {boolean} controls 是否展示原生的controls，默认不展示，timeline会覆盖这个
  * @prop {boolean} timeline 自定义的control
  * @prop {boolean} live 是否是直播
