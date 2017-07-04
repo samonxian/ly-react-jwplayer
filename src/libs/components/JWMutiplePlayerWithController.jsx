@@ -6,7 +6,13 @@ import JWMutiplePlayer from './JWMutiplePlayer';
 
 /**
  * JWMutiplePlayer
- * @prop { array } m3u8List mu3u8列表，格式如下
+ *@prop {array} urls 播放器url列表，决定展示多少个播放器
+ * [
+ *   'http://xxxx',
+ *   'http://xxxx',
+ *   'http://xxxx'
+ * ]
+ * 或者
  * [
  *    {
  *      begin: 1497888000,
@@ -14,6 +20,13 @@ import JWMutiplePlayer from './JWMutiplePlayer';
  *      url: ""
  *    }
  * ]
+ * @prop {number} gap 分屏间隔
+ * @prop {number} playerHeight 播放器高度
+ * @prop {number} splitScreenCount 分屏数，默认为4
+ * @prop {string} title 播放器上边标题
+ * @prop {boolean} controls 是否展示原生的controls，默认不展示，timeline会覆盖这个
+ * @prop {boolean} timeline 自定义的control
+ * @prop {boolean} live 是否是直播
  */
 export default class JWMutiplePlayerWithController extends React.Component {
   static propTypes = {
@@ -23,9 +36,12 @@ export default class JWMutiplePlayerWithController extends React.Component {
   componentDidUpdate() {}
   render() {
     let {
-      m3u8List,
       urls,
       gap,
+      title,
+      titles,
+      controls,
+      live,
       splitScreenCount,
       timeline,
       ...other
@@ -33,8 +49,11 @@ export default class JWMutiplePlayerWithController extends React.Component {
     return (
       <div {...other}>
         <JWMutiplePlayer
+          live={live}
+          title={title}
+          titles={ titles }
           timeline={timeline}
-          m3u8List={m3u8List}
+          controls={controls}
           urls={urls}
           splitScreenCount={splitScreenCount}
           gap={gap}

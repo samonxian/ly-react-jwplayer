@@ -2,7 +2,7 @@ import React from 'react';
 import PageTitle from 'react-mobx-boilerplate-js/libs/decorator/PageTitle';
 import JWPlayer from 'src/libs/components/JWPlayer';
 import JWMutiplePlayerWithController from 'src/libs/components/JWMutiplePlayerWithController';
-import { Button, Input } from 'antd';
+import { Button, Input, Spin } from 'antd';
 import fetchDecorator from 'src/libs/decorator/fetch';
 
 @fetchDecorator
@@ -16,7 +16,7 @@ class IndexView extends React.Component {
   };
   componentDidMount() {
     this.fetchOne(
-      '/v2/record/1003472?client_token=1003472_3221225472_1498792166_8f58929327ed89b6cf80bfdb1d0559f2'
+      '/v2/record/1003472?client_token=1003472_2147483648_1504425374_506e86a3ebf31e38d2684eef36bbfbcd'
     ).then(data => {
       this.setState({
         data: data
@@ -32,6 +32,10 @@ class IndexView extends React.Component {
           padding: '20px'
         }}
       >
+        {
+          !data &&
+          <Spin />
+        }
         {false &&
           <div>
             <Input id="input" />
@@ -51,8 +55,20 @@ class IndexView extends React.Component {
         >
           {data &&
             <JWMutiplePlayerWithController
+              title="test"
+              titles={
+                ['1','2']
+              }
               timeline={true}
-              m3u8List={[data.videos]}
+              urls={[data.videos,data.videos]}
+              splitScreenCount={2}
+              gap={20}
+            />}
+          {data &&
+            <JWMutiplePlayerWithController
+              timeline={true}
+              live={ true }
+              urls={['xddd']}
               splitScreenCount={2}
             />}
         </div>

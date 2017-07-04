@@ -6,9 +6,26 @@ import classnames from 'classnames';
 /**
  * JWMutiplePlayer
  * @prop {array} urls 播放器url列表，决定展示多少个播放器
+ * [
+ *   'http://xxxx',
+ *   'http://xxxx',
+ *   'http://xxxx'
+ * ]
+ * 或者
+ * [
+ *    {
+ *      begin: 1497888000,
+ *      end: 1497889800,
+ *      url: ""
+ *    }
+ * ]
  * @prop {number} gap 分屏间隔
  * @prop {number} playerHeight 播放器高度
  * @prop {number} splitScreenCount 分屏数，默认为4
+ * @prop {string} title 播放器上边标题
+ * @prop {boolean} controls 是否展示原生的controls，默认不展示，timeline会覆盖这个
+ * @prop {boolean} timeline 自定义的control
+ * @prop {boolean} live 是否是直播
  */
 export default class JWMutiplePlayer extends React.Component {
   gap = 10;
@@ -16,9 +33,7 @@ export default class JWMutiplePlayer extends React.Component {
   static propTypes = {
     gap: PropTypes.number,
     playerHeight: PropTypes.number,
-    timelineData: PropTypes.array,
     splitScreenCount: PropTypes.number,
-    m3u8List: PropTypes.array.isRequired,
     urls: PropTypes.array
   };
   getTimeLineData(m3u8List = []) {
@@ -59,21 +74,17 @@ export default class JWMutiplePlayer extends React.Component {
     let {
       urls,
       height,
-      m3u8List = [],
       timeline,
       playerHeight,
+      title,
+      titles = [],
+      controls,
+      live,
       splitScreenCount = this.splitScreenCount,
       gap = this.gap,
       className,
       ...other
     } = this.props;
-    if (!urls) {
-      urls = m3u8List;
-    }
-    if (!urls) {
-      console.error('props.url 或 props.m3u8List必传一个');
-      return false;
-    }
     other.style = Object.assign(
       {
         marginLeft: `-${gap / 2}px`,
@@ -93,14 +104,19 @@ export default class JWMutiplePlayer extends React.Component {
         {urls &&
           urls.map((v, k) => {
             var timelineData;
-            if (!m3u8List[k]) {
-              timelineData = false;
+            var key;
+            var url;
+            if (Object.prototype.toString.apply(v) === '[object String]') {
+              key = v;
+              url = v;
             } else {
-              timelineData = this.getTimeLineData(m3u8List[k]);
+              key = (timelineData && timelineData.key) || k;
+              timelineData = this.getTimeLineData(v);
+              url = (timelineData && timelineData.data && timelineData.data[0] && timelineData.data[0].url);
             }
             var style = {
               float: 'left',
-              marginBottom: '10px',
+              marginBottom: `${gap}px`,
               padding: `0 ${gap / 2}px`
             };
             var width;
@@ -121,17 +137,14 @@ export default class JWMutiplePlayer extends React.Component {
             }
             return (
               <JWPlayer
+                controls={controls}
+                title={titles[k] || title}
                 timeline={timeline}
-                timelineData={timelineData}
+                timelineData={timelineData || { }}
                 style={style}
-                url={
-                  (timelineData &&
-                    timelineData.data &&
-                    timelineData.data[0] &&
-                    timelineData.data[0].url) ||
-                  v
-                }
-                key={k}
+                live={live}
+                url={url}
+                key={key}
                 className="jw-player-container"
                 width={width}
                 height={playerHeight}
